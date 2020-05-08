@@ -4,7 +4,7 @@
   <div style="position: absolute; top:65px;left:50%;font-size:30px; transform: translateX(-50%)">{{soldes}}</div>
 
   <div style="position: absolute; top:95px;left:50%;font-size:30px; transform: translateX(-50%)">{{total}}</div>
-  <div style="position: absolute; top:125px;left:50%;font-size:30px; transform: translateX(-50%);color:green;">{{epargne}}</div>
+  <div style="position: absolute; top:125px;left:50%;font-size:30px; transform: translateX(-50%);color:green;width:100%;">{{epargne}}</div>
 
   <div style="position: absolute; top:155px;left:50%;font-size:30px; transform: translateX(-50%);color:blue;">{{$globalStore.config.epargne}}€ déja épargné </div>
 
@@ -52,7 +52,7 @@ if (this.config.months!=0) {
       return this.cards.map(c=>parseFloat(c.max)).reduce((a,b)=>a+b,0)+"€ But Total"
     },
     epargne(){
-       return this.cards.filter(a=>a.epargneOpts.epargne!="rien").map(c=>parseFloat(c.epargneOpts.meta.valeurMensualite)).reduce((a,b)=>a+b,0)+"€ À Épargné par mois "
+       return this.cards.filter(a=>(a.epargneOpts||{}).epargne!="rien").map(c=>parseFloat(c.epargneOpts.meta.valeurMensualite)).reduce((a,b)=>a+b,0)+"€ À Épargné par mois "
     }
   },
   methods : {
