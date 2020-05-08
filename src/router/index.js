@@ -8,8 +8,6 @@ import Projet from '@/pages/Projet'
 Vue.use(Router)
 
 export default new Router({
-	mode:"history",
-	base: window.location.href+"/",
   routes: [
     { path: '/', name: 'Config', component: Home },
     { path: '/projets', name: 'Projets', component: Projets },
