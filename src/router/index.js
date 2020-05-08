@@ -9,6 +9,7 @@ Vue.use(Router)
 
 export default new Router({
 	mode:"history",
+	baseUrl: window.location.href,
   routes: [
     { path: '/', name: 'Config', component: Home },
     { path: '/projets', name: 'Projets', component: Projets },
