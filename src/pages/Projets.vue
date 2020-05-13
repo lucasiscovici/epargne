@@ -4,9 +4,9 @@
   <div style="position: absolute; top:65px;left:50%;font-size:30px; transform: translateX(-50%)">{{soldes}}</div>
 
   <div style="position: absolute; top:95px;left:50%;font-size:30px; transform: translateX(-50%)">{{total}}</div>
-  <div style="position: absolute; top:125px;left:50%;font-size:30px; transform: translateX(-50%);color:green;width:100%;">{{epargne}}</div>
+  <div style="position: absolute; top:125px;left:50%;font-size:30px; transform: translateX(-50%);color:green;width:100%;text-align: center;">{{epargne}}</div>
 
-  <div style="position: absolute; top:155px;left:50%;font-size:30px; transform: translateX(-50%);color:blue;">{{$globalStore.config.epargne}}€ déja épargné </div>
+  <!-- <div style="position: absolute; top:155px;left:50%;font-size:30px; transform: translateX(-50%);color:blue;">{{$globalStore.config.epargne}}€ déja épargné </div> -->
 
   <div class="cards">
     <div class="rJUmICb9I">
@@ -39,28 +39,52 @@ export default {
     }
   },
   beforeMount(){
-if (this.config.months!=0) {
-  console.log("UPDADE")
-  this.updateCards()
-}
+    if (this.config.months!=0) {
+      console.log("UPDADE")
+      this.updateCards()
+    }
   },
   computed:{
     soldes(){
-      return this.cards.map(c=>parseFloat(c.solde)).reduce((a,b)=>a+b,0)+"€ Épargné"
+      return this.cards.map(c=>parseFloat(this.solde2(c))).reduce((a,b)=>a+b,0)+"€ Épargné ("+this.cards.map(c=>parseFloat(c.solde)).reduce((a,b)=>a+b,0)+"€ de base)"
     },
     total(){
       return this.cards.map(c=>parseFloat(c.max)).reduce((a,b)=>a+b,0)+"€ But Total"
     },
     epargne(){
-       return this.cards.filter(a=>(a.epargneOpts||{}).epargne!="rien").map(c=>parseFloat(c.epargneOpts.meta.valeurMensualite)).reduce((a,b)=>a+b,0)+"€ À Épargné par mois "
+       // return this.cards.filter(a=>(a.epargneOpts||{}).epargne!="rien").map(c=>parseFloat(c.epargneOpts.meta.valeurMensualite)).reduce((a,b)=>a+b,0)+"€ À Épargné par mois
+       var nbMonths=this.config.dateFin === undefined ? 0 : moment(this.config.dateFin).diff(this.config.dateDebut,'months');
+       return this.config.epargne()*nbMonths+` € À Épargné en ${nbMonths} mois` ;
     }
   },
   methods : {
+    solde2 (c){
+      if (c.epargneOpts == undefined || c.epargneOpts.meta == undefined ||c.epargneOpts.meta.valeurMensualite==undefined) {
+        return 0;
+      }
+      var nbMonths = (this.$utils.diffMonths(this.config.dateFin,c.date));
+      var base = c.base || 0;
+      var toEpargned = c.epargneOpts.meta.valeurMensualite;
+      var months = [];
+      var dateB = this.config.date;
+      // var toEpargned2= base+toEpargned >this.card.max ? this.card.max -base : toEpargned
+
+      // this.$utils.range(0,nbMonths).forEach((a)=>{
+      //   // console.log(a);
+      //   months.push({valueOrig:toEpargned,
+      //               date:moment(dateB).startOf("month").add(a,'months').format("MMMM"),
+      //                 value:base+toEpargned})
+      //   base+=toEpargned;
+      // })
+      
+      return Math.min(nbMonths*toEpargned,parseFloat(c.max)-parseFloat(c.solde))+parseFloat(c.solde);
+    },
     sub(index_){
       var index=parseInt(index_) || 0
-      var ep=this.cards[index].epargneOpts.epargne!="rien" ? `
-[Epargne : ${this.cards[index].epargneOpts.meta.valeurMensualite}€/Mois]` : ""
-       var ttt=this.cards[index].solde+"€/"+this.cards[index].max+"€ ("+Math.round((parseFloat(this.cards[index].solde/parseInt(this.cards[index].max)||0)||0)*100)+"%) "+ep
+      var ep= "" //this.cards[index].epargneOpts.epargne!="rien" ?
+      //ar ep=
+
+       var ttt=this.solde2(this.cards[index])+"€/"+this.cards[index].max+"€ ("+Math.round((parseFloat(this.solde2(this.cards[index])/parseInt(this.cards[index].max)||0)||0)*100)+"%) "+ep
        return ttt;
     },
     add(){
@@ -111,10 +135,10 @@ if (this.config.months!=0) {
   position: relative;
   margin: auto;
   background-color: #ffffff;
-  overflow: hidden;
+  overflow: scroll;
   width: 100%;
-  height: 100%;
-  height: 100vh;
+  min-height: 100%;
+  min-height: 100vh;
 }
 
 .r1rqyUC-cU {

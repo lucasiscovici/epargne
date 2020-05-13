@@ -1,91 +1,146 @@
 <template>
-  <div>
-  <div v-if="modifyOK" style=" width:100%;height:100vh;text-align: center; top: 0px; position: absolute;background-color: rgba(0,0,0,0.5  );z-index:1000000000;">
-    <span style="position: absolute;top:5px; color:white;left:5px; width: 20px; font-size:40px" @click="modifyOK=false">X</span>
-    <div style="text-align: center; top:50%; position:absolute;left:50%;transform : translateX(-100%) translateY(-50%)">
-    <span style="font-size:50px;font-weight: bold; color:white">{{modif.label}}</span></br>
-    <input  @input="modif.change" :type="modif.type || 'text'" autofocus="true" ref="in" class="SkMxvRbqL2" :value="modif.value" overflow="hidden" text-overflow="ellipsis"/>
-  </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" @click="modifyOK=false;modif.ok($refs.in.value)" ref="okButton"> OK </button>
-  </div>
-  </div>
-<div id="rywc8AWcL">
-  <span @dblclick="changeTitle" style="position:absolute; left:0%;top:0px; font-size:50px; color: rgb(83, 58, 183)">{{card.title}} {{months}}</span>
+    <div>
+    <div v-if="modifyOK" style=" width:100%;height:100vh;text-align: center; top: 0px; position: absolute;background-color: rgba(0,0,0,0.5  );z-index:100000;">
+      <span style="position: absolute;top:5px; color:white;left:5px; width: 20px; font-size:40px" @click="modifyOK=false">X</span>
+      <div style="text-align: center; top:50%; position:absolute;left:50%;transform : translateX(-100%) translateY(-50%)">
+      <span style="font-size:50px;font-weight: bold; color:white">{{modif.label}}</span></br>
+      <input  @input="modif.change" :type="modif.type || 'text'" autofocus="true" ref="in" class="SkMxvRbqL2" :value="modif.value" overflow="hidden" text-overflow="ellipsis"/>
+    </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" @click="modifyOK=false;modif.ok($refs.in.value)" ref="okButton"> OK </button>
+    </div>
+    </div>
+  <div id="rywc8AWcL">
+    <span @dblclick="changeTitle" style="position:absolute; left:0%;top:0px; font-size:50px; color: rgb(83, 58, 183)">{{card.title}} {{months}}</span>
 
-  <mdc-switch align-end class="SygLSwRbqI" label="Activation" :checked="card.activation" @change="changeActivation"></mdc-switch>
+    <mdc-switch align-end class="SygLSwRbqI" label="Activation" :checked="card.activation" @change="changeActivation"></mdc-switch>
 
-<div style="margin-top:80px">
- <div style="display:flex">
-    <span class="BJfnwR-9U">Solde</span><span class="SkMxvRbqL noSelect" @dblclick="editSolde">{{card.solde}}€</span><mdc-linear-progress class="HJgu2I0ZqU" open :progress="pg" buffer="1"></mdc-linear-progress>  <span class="SyhyOR-qL noSelect" @dblclick="editMax">{{card.max}}€ ({{Math.round(pg*100)}}%)</span>
+  <div style="margin-top:80px">
+   <div style="display:flex">
+      <span class="BJfnwR-9U">Solde</span><span class="SkMxvRbqL noSelect" @dblclick="editSolde">{{parseFloat(card.solde)+solde2}}({{card.solde}})€</span><mdc-linear-progress class="HJgu2I0ZqU" open :progress="pg" buffer="1"></mdc-linear-progress>  <span class="SyhyOR-qL noSelect" @dblclick="editMax">{{card.max}}€ ({{Math.round(pg*100)}}%)</span>
 
- </div>
-</div>
-<div class="kk" >
-  <hr style="margin-top:100px; border-color: rgb(83, 58, 183); margin-left:-200px; width:100%">
-   <mdc-select style="width:500px; font-size:30px !important; margin-top:50px" class="SJXBnuA-qU" label="Options d'épargne" :value="card.epargneOpts.epargne" ref="epargne" @change="changeEpargne">
-    <optgroup label="">
-
-    <option class="SJLB2d0b9L" value="rien">Pas d'option</option>
-
-    <option class="Sk4BnORb5U" value="a">Somme/Pourcentage par interval</option>
-  
-  </optgroup>
-  </mdc-select>
-
-  <div v-show="epargne=='a'">
-
- <mdc-textfield :trailing-icon="tl" ref="valeur"  @input="checkval" style="margin-top:100px;text-align: center" label="Somme à épargner" :value="card.epargneOpts.valeur" type="number" rows="100" cols="100"></mdc-textfield>
-
- <mdc-textfield  @change="changedFreq" ref="freq" style="margin-top:100px;text-align: center" label="Fréquence"  :value="card.epargneOpts.frequence" type="number" rows="100" cols="100"></mdc-textfield>
-
- <mdc-select class="Hkt8FRWqL" label="Interval" :value="card.epargneOpts.interval" ref="interval" @change="changedInterval">
-    <option class="S1eFLtCZ5I" value="a">Jours</option>
-  
-    <option class="HyZFLFRZ9L" value="b">Semaines</option>
-  
-    <option class="SyfKIK0-cU" value="c">Mois</option>
-  </mdc-select>
-  </br>
-  <span>{{this.text}}</span>
-  </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" ref="okButtonA" @click="okA"> OK </button>
+   </div>
+   <div style="text-align: center !important;width: 90%;text-align: center;"><span style="text-align: center !important;padding-top:30px;font-size:30px;">Date de commencement</span><datepicker :inputClass="'dclass'" style="text-align: center !important;"  :minimumView="'month'" :value="card.date" ref="dateDebut" :disabled-dates="{to : new Date(config.dateDebut), from: (new Date(config.dateFin)) || undefined}" format="MMMM yyyy" @input="changeDateDebut"></datepicker></div>
 
   </div>
-  <div style="display:none">
-  <input class="BJi5_CZ9I" value="" placeholder="placeholder" overflow="hidden" text-overflow="ellipsis"/>
+      <hr style="margin-top:100px; border-color: rgb(83, 58, 183); margin-left:-200px; width:100%">
+Transactions:
+<ul>
+  <li v-for="(c,i) in getTransactions" :key="i">
+    <span>{{c.date}} : {{c.value}}€ ({{c.quoi}}) [{{c.previous}}€]</span>
+  </li> 
+</ul>
+Transactions (automatique):
+<ul>
+  <li v-for="(c,i) in getTransactions2()" :key="i">
+    <span>{{c.date}} : {{c.value}}€ ({{c.quoi}}) [{{c.previous}}€]</span>
+  </li> 
+</ul>
+  <div class="kk" >
+    <hr style="margin-top:100px; border-color: rgb(83, 58, 183); margin-left:-200px; width:100%">
+     <mdc-select style="width:500px; font-size:30px !important; margin-top:50px" class="SJXBnuA-qU" label="Options d'épargne" :value="card.epargneOpts.epargne" ref="epargne" @change="changeEpargne">
+      <optgroup label="">
 
-  <span class="HJDWtC-5L">Somme par mois</span>
-  <input class="B1umK0-5U" value="" placeholder="placeholder" overflow="hidden" text-overflow="ellipsis"/>
-  <span class="HyxOmFCW5L">Pourcentage par mois</span>
-  <mdc-select class="Hkt8FRWqL" label="Priorité" value="a">
-    <option class="S1eFLtCZ5I" value="a">Option A</option>
-  
-    <option class="HyZFLFRZ9L" value="b">Option B</option>
-  
-    <option class="SyfKIK0-cU" value="c">Option C</option>
-  </mdc-select>
+      <option class="SJLB2d0b9L" value="rien">Pas d'option</option>
+
+      <option class="Sk4BnORb5U" value="a">Somme/Pourcentage par interval</option>
+    
+    </optgroup>
+    </mdc-select>
+
+    <div v-show="epargne=='a'">
+
+   <mdc-textfield :trailing-icon="tl" ref="valeur"  @input="checkval" style="margin-top:100px;text-align: center" label="Somme à épargner" :value="card.epargneOpts.valeur" type="number" rows="100" cols="100"></mdc-textfield>
+
+   <mdc-textfield  @change="changedFreq" ref="freq" style="margin-top:100px;text-align: center" label="Fréquence"  :value="card.epargneOpts.frequence" type="number" rows="100" cols="100"></mdc-textfield>
+
+   <mdc-select class="Hkt8FRWqL" label="Interval" :value="card.epargneOpts.interval" ref="interval" @change="changedInterval">
+      <option class="S1eFLtCZ5I" value="a">Jours</option>
+    
+      <option class="HyZFLFRZ9L" value="b">Semaines</option>
+    
+      <option class="SyfKIK0-cU" value="c">Mois</option>
+    </mdc-select>
+    </br>
+    <span>{{this.text}}</span>
+    </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" ref="okButtonA" @click="okA"> OK </button>
+
+    </div>
+    <div style="display:none">
+    <input class="BJi5_CZ9I" value="" placeholder="placeholder" overflow="hidden" text-overflow="ellipsis"/>
+
+    <span class="HJDWtC-5L">Somme par mois</span>
+    <input class="B1umK0-5U" value="" placeholder="placeholder" overflow="hidden" text-overflow="ellipsis"/>
+    <span class="HyxOmFCW5L">Pourcentage par mois</span>
+    <mdc-select class="Hkt8FRWqL" label="Priorité" value="a">
+      <option class="S1eFLtCZ5I" value="a">Option A</option>
+    
+      <option class="HyZFLFRZ9L" value="b">Option B</option>
+    
+      <option class="SyfKIK0-cU" value="c">Option C</option>
+    </mdc-select>
+    </div>
   </div>
-</div>
-</div>
-</div>
+  </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'projet',
   mounted(){
-if (this.epargne == "a") {
-     setTimeout(x => {
-this.$nextTick(() => this.changeText())    }, 0);
-   }
+    if (this.epargne == "a") {
+      setTimeout(x => {
+        this.$nextTick(() => this.changeText())    
+      }, 0);
+
+      // this.getTransactions()
+       }
   },
   methods : {
+    
+    getTransactions2(){
+      if (this.card.epargneOpts.meta == undefined || this.card.epargneOpts.meta.valeurMensualite==undefined) {
+        return "";
+      }
+      var nbMonths = (this.$utils.diffMonths(this.config.dateFin,this.card.date));
+      var base = parseFloat(this.card.solde);
+      var toEpargned = this.card.epargneOpts.meta.valeurMensualite;
+      var months = [];
+      var dateB = this.card.date;
+
+      this.$utils.range(0,nbMonths).forEach((a)=>{
+        // console.log(a);
+        var toEpargned2= base+toEpargned >parseFloat(this.card.max) ? this.card.max -base : toEpargned
+        months.push({value:toEpargned2,
+          quoi:"solde",previous: base,
+                    date:moment(dateB).startOf("month").add(a,'months').format("MMMM"),
+                      valueCum:base+toEpargned2})
+        base+=toEpargned;
+      })
+
+      return months.filter((a)=>a.value>0)
+    },
+    changeDateDebut(a){
+      this.$set(this.card,"date",Date.parse(a));
+      // this.$update()
+      // this.card.date=Date.parse(a);
+    },
     editSolde(){
       this.modifyOK=true;
-      this.modif={label:"Solde", value: this.card.solde, ok: (i)=>this.card.solde=i,change: ()=> { 
-        this.$refs.okButton.disabled = parseInt(((this.$refs.in || {value: 0}).value))>parseInt(this.card.max) || this.checkEpargneDispo(parseInt(this.$refs.in.value),this.cardid)
+      var previous=parseFloat(this.card.solde);
+      this.modif={label:"Solde",type:"number", value: this.card.solde, ok: (i)=>{
+        this.card.solde=i
+          this.card.transactions.push({quoi:"solde",value: this.card.solde,previous:previous,
+        date:moment().format("MMMM YYYY"),dateO:Date.parse(moment())})
+
+      },change: ()=> { 
+        this.$refs.okButton.disabled = parseInt(((this.$refs.in || {value: 0}).value))>parseInt(this.card.max) // || this.checkEpargneDispo(parseInt(this.$refs.in.value),this.cardid)
       }};
+
+
       // console.log(this.$refs.in);
       // setTimeout(this.$refs.in.focus,3000);
       this.focus()  
+
     },
     changedInterval(f){
       //this.$refs.interval
@@ -100,19 +155,22 @@ this.$nextTick(() => this.changeText())    }, 0);
     var value=e.options[e.selectedIndex].value;// get selected option value
     var text=e.options[e.selectedIndex].text;
     var vl=this.$refs["valeur"].$refs.input.value;
+    // vl = this.$globalStore.config.epargne()*
     if (parseFloat(vl) < 1 && parseFloat(vl)>0) {
-      vl = Math.round(this.$globalStore.config.epargnePerMonth*parseFloat(vl))
+      vl = Math.round(this.$globalStore.config.epargne()*parseFloat(vl))
     }
     var jf_ = this.$refs.freq.$refs.input.value;
     var jf=jf_;
     if (jf_==1) {
       jf="";
-    }
+     }
       var gg= this.$globalStore.cards.slice();
       gg.splice(this.cardid,1);
-    var fff=gg.filter(c=>c.epargneOpts.epargne!="rien").map(c=>c.epargneOpts).map(c=>this.calculeMensualite(c.valeur,c.frequence,c.interval)).reduce((a,b)=>a+b,0) 
+      var fff=gg.filter(c=>c.epargneOpts.epargne!="rien").map(c=>c.epargneOpts).map(c=>this.calculeMensualite(c.valeur,c.frequence,c.interval)).reduce((a,b)=>a+b,0) 
     // console.log(this.$globalStore.config.epargnePerMonth,fff);
-      this.$set(this,"text", vl+"€ par "+jf + " " +text + "=> "+this.calculeMensualite(vl,jf_,value)+"€ par Mois (Epargne/Mois : "+this.$globalStore.config.epargnePerMonth+"€, Il reste : "+(parseFloat(this.$globalStore.config.epargnePerMonth)-parseFloat(fff))+"€)")
+    var ml=this.calculeMensualite(vl,jf_,value);
+    var reste =(parseFloat(this.$globalStore.config.epargne())-parseFloat(fff));
+      this.$set(this,"text", vl+"€ par "+jf + " " +text + "=> "+ml+"€ par Mois ("+Math.round(ml/this.$globalStore.config.epargne()*100.)+"%) ["+reste+"€|"+this.$globalStore.config.epargne()+"€] ")
     },
     checkval(d_,i){
       if (this.$refs.okButtonA.firstChild.data=="Validé") {
@@ -127,7 +185,7 @@ this.$nextTick(() => this.changeText())    }, 0);
       this.changeText()
       var vl=parseFloat(this.$refs["valeur"].$refs.input.value);
     if (vl < 1 && vl>0) {
-      vl = Math.round(this.$globalStore.config.epargnePerMonth*parseFloat(vl))
+      vl = Math.round(this.$globalStore.config.epargne()*parseFloat(vl))
     }
     // console.log(this.$globalStore.config.epargnePerMonth)
       var gg= this.$globalStore.cards.slice();
@@ -136,14 +194,14 @@ this.$nextTick(() => this.changeText())    }, 0);
     var text=e.options[e.selectedIndex].text;
       gg.splice(this.cardid,1);
       var fff=gg.filter(c=>c.epargneOpts.epargne!="rien").map(c=>c.epargneOpts).map(c=>this.calculeMensualite(c.valeur,c.frequence,c.interval)).reduce((a,b)=>a+b,0) + this.calculeMensualite(vl,this.$refs.freq.$refs.input.value,value);
-      this.$refs.okButtonA.disabled=parseInt(this.$globalStore.config.epargnePerMonth) <parseInt(fff)
+      this.$refs.okButtonA.disabled=parseInt(this.$globalStore.config.epargne()) <parseInt(fff)
       
       
     },
     calculeMensualite(val,freq,interval){
       var vl=val;
     if (vl < 1 && vl>0) {
-      val = Math.round(this.$globalStore.config.epargnePerMonth*parseFloat(vl))
+      val = Math.round(this.$globalStore.config.epargne()*parseFloat(vl))
     }
     console.log(val,freq,interval);
       if (interval=="a") {
@@ -157,27 +215,36 @@ this.$nextTick(() => this.changeText())    }, 0);
     okA(){
        var e = this.$refs.interval.$refs.native_control;
       var value=e.options[e.selectedIndex].value;// get selected option value
-      var text=e.options[e.selectedIndex].text;
-    var d=this.$refs["valeur"].$refs.input.value;
+          var text=e.options[e.selectedIndex].text;
+      var d=this.$refs["valeur"].$refs.input.value;
 
       this.card.epargneOpts.epargne="a"
       this.card.epargneOpts.frequence=this.$refs.freq.$refs.input.value;
        this.card.epargneOpts.interval=value;
        this.card.epargneOpts.valeur=d;
        this.card.epargneOpts.meta={valeurMensualite:this.calculeMensualite(d,this.$refs.freq.$refs.input.value,value)};
-       console.log(this.$refs.okButtonA)
+       // console.log(this.$refs.okButtonA)
        this.$refs.okButtonA.firstChild.data="Validé"
 
 
     },
     changeActivation(o){
       console.log(o);
-      this.$set(this.card,"activation",o);
+      é
        this.focus()
     },
     editMax(){
       this.modifyOK=true;
-      this.modif={label:"But", value: this.card.max, ok: (i)=>this.card.max=i}
+      var previous= this.card.max;
+      this.modif={label:"But", value: this.card.max, ok: (i)=>{
+        this.card.max=i
+this.card.transactions.push({quoi:"max",
+        value: this.card.max,previous:previous,
+        date:moment().format("MMMM YYYY"),dateO:Date.parse(moment())})
+
+      }}
+      
+
        this.focus()
     },
     changeTitle(){
@@ -191,7 +258,8 @@ this.$nextTick(() => this.changeText())    }, 0);
     },
     focus(){
             setTimeout(x => {
-this.$nextTick(() => this.$refs.in.focus())    }, 0);
+                this.$nextTick(() => this.$refs.in.focus())    
+              }, 0);
     },
     checkEpargneDispo(ii,io){
       var cc=this.$globalStore.cards.slice()
@@ -207,17 +275,45 @@ this.$nextTick(() => this.$refs.in.focus())    }, 0);
       tl:"euro",
       epargne: (this.$globalStore.cards[this.$route.params.id].epargneOpts || {}).epargne ,
       modif: {label:"",value:""},
+      config: this.$globalStore.config,
       cardid:this.$route.params.id,
-      card : {...{title:"Default",solde:0,max:100, activation: true,epargneOpts:{epargne:"rien",frequence:1,interval:"a",valeur:"0"}},
+      card : {...{title:"Default",solde:0,max:100, activation: true,epargneOpts:{epargne:"rien",frequence:1,interval:"a",valeur:"0",meta:{}}, base:0,transactions:[], date: new Date()},
               ...this.$globalStore.cards[this.$route.params.id]}
     }
   },
   computed : {
+
+    solde2 (){
+      if (this.card.epargneOpts.meta == undefined || this.card.epargneOpts.meta.valeurMensualite==undefined) {
+        return 0;
+      }
+      var nbMonths = (this.$utils.diffMonths(this.config.dateFin,this.card.date));
+      var base = this.card.base || 0;
+      var toEpargned = this.card.epargneOpts.meta.valeurMensualite;
+      var months = [];
+      var dateB = this.config.date;
+      // var toEpargned2= base+toEpargned >this.card.max ? this.card.max -base : toEpargned
+
+      // this.$utils.range(0,nbMonths).forEach((a)=>{
+      //   // console.log(a);
+      //   months.push({valueOrig:toEpargned,
+      //               date:moment(dateB).startOf("month").add(a,'months').format("MMMM"),
+      //                 value:base+toEpargned})
+      //   base+=toEpargned;
+      // })
+      
+      return Math.min(nbMonths*toEpargned,parseFloat(this.card.max)-parseFloat(this.card.solde));
+    },
+    getTransactions(){
+      var fg= this.card.transactions.filter((e)=>Object.keys(e).length>0);
+      console.log(fg);
+      return fg;
+    }, 
     pg() {
-      return parseFloat(this.card.solde/this.card.max) || 0;
+      return parseFloat((parseFloat(this.card.solde)+this.solde2)/parseFloat(this.card.max)) || 0;
     },
     months(){
-      return "("+(this.card.months || 0)+" months)" 
+      return "("+(this.$utils.diffMonths(this.config.dateFin,this.card.date))+" mois)" 
     }
   },
   watch:{
