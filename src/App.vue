@@ -9,6 +9,8 @@
       </mdc-toolbar-section>
       <mdc-toolbar-section align-end>
       <mdc-toolbar-icon @click="download" icon="help"></mdc-toolbar-icon>
+        <mdc-toolbar-icon @click="upload" icon="power"></mdc-toolbar-icon>
+
     </mdc-toolbar-section>
     </mdc-toolbar-row>
   </mdc-toolbar>
@@ -23,6 +25,7 @@
   </main>
 
 </mdc-layout-app>
+<input id="caca" type="file" name="somename" size="chars" accept=".json" @change="changeFile">
 
   </div>
 </template>
@@ -40,6 +43,34 @@
 export default {
   name: 'app',
   methods: {
+    changeFile(d){
+      console.log(d);
+      var ff=document.querySelector("#caca").files;
+      if (ff.length>0) {
+        var filp=ff[0];
+        // console.log(filp);
+        var thiso=this;
+        if (filp.type=="application/json") {
+           var reader = new FileReader();
+        reader.onload = (d)=>{
+              var obj = JSON.parse(event.target.result);
+              if (obj.config ) {
+                thiso.$set(thiso.$globalStore,"config",obj.config)
+              }
+              if (obj.cards ) {
+                thiso.$set(thiso.$globalStore,"cards",obj.cards)
+              }
+              
+        };
+        reader.readAsText(filp);
+
+        }
+      }
+    },  
+    upload(){
+ document.querySelector('#caca').click();
+
+    },
     download(){
       downloadObjectAsJson({cards:this.$globalStore.cards,config:this.$globalStore.config})
     },
@@ -54,6 +85,12 @@ export default {
 html, body, #app {
   height: 100%;
   width: 100%;
+}
+#caca {
+    display: block;
+    visibility: hidden;
+    width: 0;
+    height: 0;
 }
 
 #app {

@@ -5,7 +5,10 @@
       <div style="text-align: center; top:50%; position:absolute;left:50%;transform : translateX(-100%) translateY(-50%)">
       <span style="font-size:50px;font-weight: bold; color:white">{{modif.label}}</span></br>
       <input  @input="modif.change" :type="modif.type || 'text'" autofocus="true" ref="in" class="SkMxvRbqL2" :value="modif.value" overflow="hidden" text-overflow="ellipsis"/>
-    </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" @click="modifyOK=false;modif.ok($refs.in.value)" ref="okButton"> OK </button>
+      </br v-if="modif.comment"> 
+       </br v-if="modif.comment"> 
+      <input  v-if="modif.comment"  placeholder="comment"  type="text" ref="in2" class="SkMxvRbqL2"  overflow="hidden" text-overflow="ellipsis"/>
+    </br></br>  <button style="width: 100px;height: 50px;margin-left:-20px;" @click="modifyOK=false;modif.ok($refs.in.value,($refs.in2 || {value:undefined}).value);if(modif.comment){modif.comment($refs.in2.value)}" ref="okButton"> OK </button>
     </div>
     </div>
   <div id="rywc8AWcL">
@@ -18,7 +21,16 @@
       <span class="BJfnwR-9U">Solde</span><span class="SkMxvRbqL noSelect" @dblclick="editSolde">{{parseFloat(card.solde)+solde2}}({{card.solde}})€</span><mdc-linear-progress class="HJgu2I0ZqU" open :progress="pg" buffer="1"></mdc-linear-progress>  <span class="SyhyOR-qL noSelect" @dblclick="editMax">{{card.max}}€ ({{Math.round(pg*100)}}%)</span>
 
    </div>
+   <div style="display:flex">
+    <span class="BJfnwR-9U">Dépenses</span> <span class="SkMxvRbqL SkMxvRbqL3 noSelect" >{{getDepenses2}}€</span><mdc-linear-progress class="HJgu2I0ZqU SkMxvRbqL3" open :progress="pg2" buffer="1"></mdc-linear-progress>   <span class="SyhyOR-qL SkMxvRbqL3 noSelect" 
+  >{{parseFloat(card.solde)+solde2}}€ ({{getDepenses3}}%) ({{getDepenses4}}€)</span>
+
+
+   </div>
+     </br>
    <div style="text-align: center !important;width: 90%;text-align: center;"><span style="text-align: center !important;padding-top:30px;font-size:30px;">Date de commencement</span><datepicker :inputClass="'dclass'" style="text-align: center !important;"  :minimumView="'month'" :value="card.date" ref="dateDebut" :disabled-dates="{to : new Date(config.dateDebut), from: (new Date(config.dateFin)) || undefined}" format="MMMM yyyy" @input="changeDateDebut"></datepicker></div>
+</br>
+ <button style="text-align: center !important;width: 90%;text-align: center;"><span style="text-align: center !important;padding-top:30px;font-size:30px;" @click="addDepense">Ajouter Un Dépense (-{{getDep()}}€)</span></button>
 
   </div>
       <hr style="margin-top:100px; border-color: rgb(83, 58, 183); margin-left:-200px; width:100%">
@@ -32,6 +44,12 @@ Transactions (automatique):
 <ul>
   <li v-for="(c,i) in getTransactions2()" :key="i">
     <span>{{c.date}} : {{c.value}}€ ({{c.quoi}}) [{{c.previous}}€]</span>
+  </li> 
+</ul>
+Dépenses:
+<ul>
+  <li v-for="(c,i) in getDepenses()" :key="i">
+    <span>{{c.date}} : -{{c.value}}€ ({{c.comment}})€ <button @click="deleteDepense(c)">X</button></span>
   </li> 
 </ul>
   <div class="kk" >
@@ -84,6 +102,8 @@ Transactions (automatique):
 </template>
 
 <script>
+  var hash = require('object-hash');
+
 export default {
   name: 'projet',
   mounted(){
@@ -112,6 +132,7 @@ export default {
         var toEpargned2= base+toEpargned >parseFloat(this.card.max) ? this.card.max -base : toEpargned
         months.push({value:toEpargned2,
           quoi:"solde",previous: base,
+           // id:this.$utils.getRandomString(),
                     date:moment(dateB).startOf("month").add(a,'months').format("MMMM"),
                       valueCum:base+toEpargned2})
         base+=toEpargned;
@@ -119,10 +140,28 @@ export default {
 
       return months.filter((a)=>a.value>0)
     },
+    getDepenses(){
+      var fg= this.card.transactions.filter((e)=>Object.keys(e).length>0).filter((e)=>e.quoi=="depense");
+      //console.log(fg);
+
+      return fg;
+    },
+    deleteDepense(i){
+      console.log(i,hash(i),this.card.transactions.map(
+        (z)=>hash(z)));
+      this.card.transactions = this.card.transactions.filter((e)=>hash(e)!=hash(i));
+      // console.log(this.card.transactions); 
+      this.$set(this.card,"transactions",this.card.transactions);
+      // this.card.transactions=dd;
+     
+    },
     changeDateDebut(a){
       this.$set(this.card,"date",Date.parse(a));
       // this.$update()
       // this.card.date=Date.parse(a);
+    },
+    getDep(){
+      return this.getDepenses().map((e)=>e.value).reduce((a,b)=>a+b,0);
     },
     editSolde(){
       this.modifyOK=true;
@@ -130,6 +169,7 @@ export default {
       this.modif={label:"Solde",type:"number", value: this.card.solde, ok: (i)=>{
         this.card.solde=i
           this.card.transactions.push({quoi:"solde",value: this.card.solde,previous:previous,
+             // id:this.$utils.getRandomString(),
         date:moment().format("MMMM YYYY"),dateO:Date.parse(moment())})
 
       },change: ()=> { 
@@ -233,12 +273,30 @@ export default {
       é
        this.focus()
     },
+    addDepense(){
+      this.modifyOK=true;
+      var previous= this.getDepenses().map((d)=>d.value).reduce((a,b)=>a+b,0);
+      this.modif={label:"Dépense", value: 0,comment : (i)=> {
+          console.log(i);
+          // this.card.transactions
+      }, ok: (i,i2)=>{
+        this.card.transactions.push({quoi:"depense",  
+            comment:i2,
+
+          // id:this.$utils.getRandomString(),
+                  value: parseFloat(i) ,previous: previous,
+        date:moment().format("MMMM YYYY"),dateO:Date.parse(moment())})
+      }};
+
+       this.focus()
+    },
     editMax(){
       this.modifyOK=true;
       var previous= this.card.max;
       this.modif={label:"But", value: this.card.max, ok: (i)=>{
         this.card.max=i
 this.card.transactions.push({quoi:"max",
+   // id:this.$utils.getRandomString(),
         value: this.card.max,previous:previous,
         date:moment().format("MMMM YYYY"),dateO:Date.parse(moment())})
 
@@ -277,12 +335,26 @@ this.card.transactions.push({quoi:"max",
       modif: {label:"",value:""},
       config: this.$globalStore.config,
       cardid:this.$route.params.id,
-      card : {...{title:"Default",solde:0,max:100, activation: true,epargneOpts:{epargne:"rien",frequence:1,interval:"a",valeur:"0",meta:{}}, base:0,transactions:[], date: new Date()},
+      card : {...{title:"Default",
+        // id:this.$utils.getRandomString(),
+      solde:0,max:100, activation: true,epargneOpts:{epargne:"rien",frequence:1,interval:"a",valeur:"0",meta:{}}, base:0,transactions:[], date: new Date()},
               ...this.$globalStore.cards[this.$route.params.id]}
     }
   },
   computed : {
 
+getDepenses2(){
+      var gg=this.getDepenses().map((e)=>e.value).reduce((a,b)=>a+b,0);
+      return parseInt(gg);
+    },
+    getDepenses3(){
+      var gg=this.getDepenses().map((e)=>e.value).reduce((a,b)=>a+b,0);
+      return parseInt(parseInt(gg)/(parseFloat(this.card.solde)+this.solde2)*100);
+    },
+    getDepenses4(){
+      var gg=this.getDepenses().map((e)=>e.value).reduce((a,b)=>a+b,0);
+      return parseInt((parseFloat(this.card.solde)+this.solde2)-gg);
+    },
     solde2 (){
       if (this.card.epargneOpts.meta == undefined || this.card.epargneOpts.meta.valeurMensualite==undefined) {
         return 0;
@@ -305,10 +377,14 @@ this.card.transactions.push({quoi:"max",
       return Math.min(nbMonths*toEpargned,parseFloat(this.card.max)-parseFloat(this.card.solde));
     },
     getTransactions(){
-      var fg= this.card.transactions.filter((e)=>Object.keys(e).length>0);
-      console.log(fg);
+      var fg= this.card.transactions.filter((e)=>Object.keys(e).length>0 && e.quoi!="depense");
+      //console.log(fg);
       return fg;
     }, 
+    pg2() {
+      var g= this.getDepenses().map((e)=>e.value).reduce((a,b)=>a+b,0);
+      return parseFloat(g/(parseFloat(this.card.solde)+this.solde2)) || 0;
+    },
     pg() {
       return parseFloat((parseFloat(this.card.solde)+this.solde2)/parseFloat(this.card.max)) || 0;
     },
@@ -361,6 +437,7 @@ hr {
 }
 
 .SkMxvRbqL {
+
   text-overflow: ellipsis;
   text-align: center;
   font-size: 37px;
@@ -375,7 +452,12 @@ hr {
   margin:0;
 }
 
+.SkMxvRbqL3 {
+    --mdc-theme-primary: red !important;
+    --mdc-theme-secondary: red !important;
+  background-color: red !important;
 
+}
 
 .SkMxvRbqL2 {
   text-overflow: ellipsis;
@@ -448,6 +530,8 @@ hr {
 </style>
 
 <style>
+
+
 
 .SJXBnuA-qU {
   margin-left: -200px;

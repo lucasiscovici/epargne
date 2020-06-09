@@ -5,6 +5,8 @@
 
   <div style="position: absolute; top:95px;left:50%;font-size:30px; transform: translateX(-50%)">{{total}}</div>
   <div style="position: absolute; top:125px;left:50%;font-size:30px; transform: translateX(-50%);color:green;width:100%;text-align: center;">{{epargne}}</div>
+  <div style="position: absolute; top:155px;left:50%;font-size:30px; transform: translateX(-50%);color:red;width:100%;text-align: center;">{{depensess}}€ Dépensé</div> 
+    <div style="position: absolute; top:185px;left:50%;font-size:30px; transform: translateX(-50%);color:darkblue;width:100%;text-align: center;">Il reste {{reste}}€ ({{resteP}}%)</div> 
 
   <!-- <div style="position: absolute; top:155px;left:50%;font-size:30px; transform: translateX(-50%);color:blue;">{{$globalStore.config.epargne}}€ déja épargné </div> -->
 
@@ -45,6 +47,16 @@ export default {
     }
   },
   computed:{
+    reste(){
+        return this.cards.map(c=>this.solde2(c)-this.depenses(c)).reduce((a,b)=>a+b,0);
+    },
+    resteP(){
+        return parseInt(this.cards.map(c=>this.solde2(c)-this.depenses(c)).reduce((a,b)=>a+b,0)/this.cards.map(c=>parseFloat(this.solde2(c))).reduce((a,b)=>a+b,0)*100);
+
+    },
+    depensess(){
+      return this.cards.map(c=>this.depenses(c)).reduce((a,b)=>a+b,0);
+    },
     soldes(){
       return this.cards.map(c=>parseFloat(this.solde2(c))).reduce((a,b)=>a+b,0)+"€ Épargné ("+this.cards.map(c=>parseFloat(c.solde)).reduce((a,b)=>a+b,0)+"€ de base)"
     },
@@ -58,6 +70,12 @@ export default {
     }
   },
   methods : {
+    depenses(c){
+       var fg= c.transactions.filter((e)=>Object.keys(e).length>0).filter((e)=>e.quoi=="depense");
+      //console.log(fg);
+
+      return fg.map((k)=>k.value).reduce((a,b)=>a+b,0);
+    }, 
     solde2 (c){
       if (c.epargneOpts == undefined || c.epargneOpts.meta == undefined ||c.epargneOpts.meta.valeurMensualite==undefined) {
         return 0;
@@ -81,7 +99,8 @@ export default {
     },
     sub(index_){
       var index=parseInt(index_) || 0
-      var ep= "" //this.cards[index].epargneOpts.epargne!="rien" ?
+      var ep= "\nDépenses : "+this.depenses(this.cards[index])+"€ ["+parseInt((this.depenses(this.cards[index])/this.solde2(this.cards[index]))*100.)+"%]";
+      //this.cards[index].epargneOpts.epargne!="rien" ?
       //ar ep=
 
        var ttt=this.solde2(this.cards[index])+"€/"+this.cards[index].max+"€ ("+Math.round((parseFloat(this.solde2(this.cards[index])/parseInt(this.cards[index].max)||0)||0)*100)+"%) "+ep
@@ -120,7 +139,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .cards {
-  margin-top:190px;
+  margin-top:220px;
   flex-wrap: wrap;
    display: flex;
    justify-content: start;

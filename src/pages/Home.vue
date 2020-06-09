@@ -14,7 +14,7 @@
 </br>
 </br>
   
-<div style="text-align: center !important;width: 100%;"><span style="padding-top:30px;font-size:30px;">Date de commencement</span><datepicker :inputClass="'dclass'"  :minimumView="'month'" v-model="dateDebut" ref="dateDebut" format="MMMM yyyy" @input="changeDateDebut"></datepicker></div>
+<div style="text-align: center !important;width: 100%;" class="ff"><span style="padding-top:30px;font-size:30px;">Date de commencement</span><datepicker :inputClass="'dclass'"  :minimumView="'month'" v-model="dateDebut" ref="dateDebut" format="MMMM yyyy" @input="changeDateDebut"></datepicker></div>
 </br>
 
 <div style="text-align: center !important;width: 100%;"><span style="padding-top:30px;font-size:30px;">Date Actuelle</span><br>
@@ -97,6 +97,12 @@ export default {
 <style>
 .vdp-datepicker{
   text-align:center !important;
+
+}
+
+.ff > .vdp-datepicker{
+     position: relative !important;
+    z-index: 9999  !important;
 }
 
 .vdp-datepicker input{

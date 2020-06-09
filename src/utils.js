@@ -1,4 +1,12 @@
 var MyObject = {
+	 getRandomString : (length=20) => {
+    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    for ( var i = 0; i < length; i++ ) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+},
 
     // This is private because it is not being return
      dateDiffInDays : (date1, date2) => {

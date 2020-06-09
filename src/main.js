@@ -12,6 +12,13 @@ Vue.config.productionTip = false
 Vue.use(VueMDCAdapter)
 Vue.filter("toStr" ,(e)=>e+'')
 
+var cardSeti = (cad) => {
+  var cd=(cad.transactions || []).map((e)=>({...e,id: utils.getRandomString()}));
+   var cad2 = cad.slice();
+   cad2.transactions = cd;
+   return cad2;
+}
+
 export const globalStore = new Vue({
   data: {
     cards: JSON.parse(localStorage.getItem("cards")) || [],
